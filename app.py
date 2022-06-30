@@ -10,19 +10,19 @@ url = os.environ.get('AMQP_URL', 'amqp://guest:guest@localhost:5672/%2f')
 params = pika.URLParameters(url)
 connection = pika.BlockingConnection(params)
 channel = connection.channel() # start a channel
-channel.queue_declare(queue='hello') # Declare a queue
-for x in range(600):
+channel.queue_declare(queue='q1') # Declare a queue
+for x in range(100000000):
   channel.basic_publish(exchange='',
-                  routing_key='hello',
-                  body='Hello ' + str(x) + '<-')
+                  routing_key='q1',
+                  body='ping ' + str(x) + '*')
   dateTimeObj = datetime.now()
-  print(" [x] Sent Hello ->" + str(x) + " : "+ str(dateTimeObj))
+  print(" [x] ping ->" + str(x) + " : "+ str(dateTimeObj))
 
 def callback(ch, method, properties, body):
    dateTimeObj = datetime.now()
-   print(" [x] Received " + str(body)+ " : "+ str(dateTimeObj))
+   print(" [x] pong " + str(body)+ " : "+ str(dateTimeObj))
 
-channel.basic_consume('hello',
+channel.basic_consume('q2',
                       callback,
                       auto_ack=True)
 
