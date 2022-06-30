@@ -11,18 +11,20 @@ params = pika.URLParameters(url)
 connection = pika.BlockingConnection(params)
 channel = connection.channel() # start a channel
 channel.queue_declare(queue='q1') # Declare a queue
-for x in range(100000000):
+for x in range(100):
   channel.basic_publish(exchange='',
                   routing_key='q1',
-                  body='ping ' + str(x) + '*')
+                  body='vbros ' + str(x) )
   dateTimeObj = datetime.now()
-  print(" [x] ping ->" + str(x) + " : "+ str(dateTimeObj))
+  print(" [x] ping " + str(x) + " : " + str(dateTimeObj))
+
 
 def callback(ch, method, properties, body):
    dateTimeObj = datetime.now()
-   print(" [x] pong " + str(body)+ " : "+ str(dateTimeObj))
+   msg = str(body)
+   print(" [x] pong " + msg  + " : " + str(dateTimeObj))
 
-channel.basic_consume('q2',
+channel.basic_consume('q1',
                       callback,
                       auto_ack=True)
 
